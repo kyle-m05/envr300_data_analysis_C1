@@ -1,4 +1,5 @@
 
+#overall residential consumption plot
 
 residential_plot <- NC_gas_df %>%
   ggplot() +
@@ -14,11 +15,12 @@ residential_plot
 
 #linear model for residential consumption
 
-residential_model <- lm(residential ~ date, data = NC_gas_df)
+residential_lm <- lm(residential ~ date, data = NC_gas_df)
 
-summary(residential_model)
+summary(residential_lm)
 
 
+#overall commercial consumption plot
 
 commercial_plot <- NC_gas_df %>%
   ggplot() +
@@ -32,6 +34,11 @@ commercial_plot <- NC_gas_df %>%
 commercial_plot
     
 
+#linear model for commercial consumption
+
+commercial_lm <- lm(commercial ~ date, data = NC_gas_df)
+
+summary(commercial_lm)
 
 
 
