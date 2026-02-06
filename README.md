@@ -4,8 +4,11 @@ This is a data analysis project on the trends and forecasted trends of natural g
 
 **Packages (*only need to install once*):**
 
-#install for tidyverse\
+#install for tidyverse
 install.packages("tidyverse")
+
+#install for tidymodels
+install.packages("tidymodels")
 
 #install for the here package (easier for file locating)\
 install.packages("here")

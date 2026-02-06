@@ -1,6 +1,7 @@
 # Data: Loaded the datasets and libraries
 
 library(tidyverse)
+library(tidymodels)
 library(here)
 
 
@@ -10,13 +11,17 @@ library(here)
 pred_temp_df <- read.csv(here("data", "Temp_GCMs.csv"))
 #natural gas consumption dataframe
 NC_gas_df <- read.csv(here("data", "NG_CONS_SUM_DCU_SNC_M.csv"))
-NC_gas_df <- NC_gas_df[-1, ] %>%
+NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
   select(Back.to.Contents,
          X,
          X.1) %>%
   rename(date = Back.to.Contents ,
          residential = X,
-         commercial = X.1)
+         commercial = X.1) %>%
+  mutate(date = my(date),
+         residential = as.numeric(residential),
+         commercial = as.numeric(commercial)
+  )
 
 #airport weather dataframes
 RDU_df <- read.csv(here("data", "USW00013722.csv"))
