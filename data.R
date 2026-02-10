@@ -15,10 +15,10 @@ NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
   select(Back.to.Contents,
          X,
          X.1) %>%
-  rename(date = Back.to.Contents ,
+  rename(DATE = Back.to.Contents ,
          residential = X,
          commercial = X.1) %>%
-  mutate(date = my(date),
+  mutate(DATE = my(DATE),
          residential = as.numeric(residential),
          commercial = as.numeric(commercial)
   )
