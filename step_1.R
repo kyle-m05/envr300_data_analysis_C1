@@ -1,15 +1,23 @@
 
-#overall residential consumption plot
+#overall residential yearly mean consumption plot
 
-residential_plot <- NC_gas_df %>%
+NC_gas_avg_df <- NC_gas_df %>%
+  mutate(year = year(DATE)) %>%
+  group_by(year) %>%
+  summarize(
+    mean_residential = mean(residential),
+    mean_commercial = mean(commercial)
+  )
+
+residential_plot <- NC_gas_avg_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = residential)) +
-  geom_smooth(aes(x = date, y = residential), 
+  geom_point(aes(x = year, y = mean_residential)) +
+  geom_smooth(aes(x = year, y = mean_residential), 
               method = "lm", formula = y ~ x, se = FALSE) +
   labs(
-    x = "Date",
+    x = "Year",
     y = "Natural Gas Consumption (MMcf)",
-    title = "Residential Natural Gas Consumption 1989-2023"
+    title = "Annual Mean Residential Natural Gas Consumption 1989-2023"
   )
     
 
@@ -17,21 +25,22 @@ residential_plot
 
 #linear model for residential consumption
 
-residential_lm <- lm(residential ~ date, data = NC_gas_df)
+residential_lm <- lm(mean_residential ~ year, data = NC_gas_avg_df)
 
-tidy(residential_lm)
+tidy(residential_lm) %>%
+  mutate_if(is.numeric, round, 4)
 
 
 #overall commercial consumption plot
 
-commercial_plot <- NC_gas_df %>%
+commercial_plot <- NC_gas_avg_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = commercial)) +
-  geom_smooth(aes(x = date, y = commercial), method = "lm", formula = y ~ x, se = FALSE) +
+  geom_point(aes(x = year, y = mean_commercial)) +
+  geom_smooth(aes(x = year, y = mean_commercial), method = "lm", formula = y ~ x, se = FALSE) +
   labs(
     x = "Date",
     y = "Natural Gas Consumption (MMcf)",
-    title = "Commercial Natural Gas Consumption 1989-2023"
+    title = "Mean Annual Commercial Natural Gas Consumption 1989-2023"
   )
 
 commercial_plot
@@ -39,24 +48,42 @@ commercial_plot
 
 #linear model for commercial consumption
 
-commercial_lm <- lm(commercial ~ date, data = NC_gas_df)
+commercial_lm <- lm(mean_commercial ~ year, data = NC_gas_avg_df)
 
-tidy(commercial_lm)
+tidy(commercial_lm) %>%
+  mutate_if(is.numeric, round, 4)
 
 #splitting the months into 'warm' and 'cold' months
 
 NC_gas_cold_df <- NC_gas_df %>%
-  filter(month(date) %in% c(1,2,3,4,11,12))
+  mutate(
+    year = year(DATE),
+    month = month(DATE),
+    year = if_else(month >= 11, year, year - 1)
+  ) %>%
+  filter(month %in% c(11, 12, 1, 2, 3, 4)) %>%
+  group_by(year) %>%
+  summarise(
+    residential_cold = mean(residential, na.rm = TRUE),
+    commercial_cold  = mean(commercial, na.rm = TRUE)
+  )
+
 
 NC_gas_warm_df <- NC_gas_df %>%
-  filter(month(date) %in% c(5:10))
+  filter(month(DATE) %in% c(5:10)) %>%
+  mutate(year = year(DATE)) %>%
+  group_by(year) %>%
+  summarize(
+    residential_warm = mean(residential, na.rm = TRUE),
+    commercial_warm = mean(commercial, na.rm =)
+  )
 
 #creating plots for warm months
 
 residential_warm_plot <- NC_gas_warm_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = residential)) +
-  geom_smooth(aes(x = date, y = residential), 
+  geom_point(aes(x = year, y = residential_warm)) +
+  geom_smooth(aes(x = year, y = residential_warm),
               method = "lm", formula = y ~ x, se = FALSE) +
   labs(
     x = "Date",
@@ -68,8 +95,8 @@ residential_warm_plot
 
 commercial_warm_plot <- NC_gas_warm_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = commercial)) +
-  geom_smooth(aes(x = date, y = commercial), 
+  geom_point(aes(x = year, y = commercial_warm)) +
+  geom_smooth(aes(x = year, y = commercial_warm), 
               method = "lm", formula = y ~ x, se = FALSE) +
   labs(
     x = "Date",
@@ -83,8 +110,8 @@ commercial_warm_plot
 
 residential_cold_plot <- NC_gas_cold_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = residential)) +
-  geom_smooth(aes(x = date, y = residential), 
+  geom_point(aes(x = year, y = residential_cold)) +
+  geom_smooth(aes(x = year, y = residential_cold), 
               method = "lm", formula = y ~ x, se = FALSE) +
   labs(
     x = "Date",
@@ -96,8 +123,8 @@ residential_cold_plot
 
 commercial_cold_plot <- NC_gas_cold_df %>%
   ggplot() +
-  geom_point(aes(x = date, y = commercial)) +
-  geom_smooth(aes(x = date, y = commercial), 
+  geom_point(aes(x = year, y = commercial_cold)) +
+  geom_smooth(aes(x = year, y = commercial_cold), 
               method = "lm", formula = y ~ x, se = FALSE) +
   labs(
     x = "Date",
@@ -107,11 +134,18 @@ commercial_cold_plot <- NC_gas_cold_df %>%
 
 commercial_cold_plot
 
-residential_cold <- tidy(lm(residential ~ date, data = NC_gas_cold_df))
+#getting slope for cold and warm months
 
-residential_cold
+commercial_cold_lm <- tidy(lm(commercial_cold ~ year, data = NC_gas_cold_df))
+commercial_cold_lm
 
+commercial_warm_lm <- tidy(lm(commercial_warm ~ year, data = NC_gas_warm_df))
+commercial_warm_lm
 
+residential_cold_lm <- tidy(lm(residential_cold ~ year, data = NC_gas_cold_df))
+residential_cold_lm
 
+residential_warm_lm <- tidy(lm(residential_warm ~ year, data = NC_gas_warm_df))
+residential_warm_lm
 
 
