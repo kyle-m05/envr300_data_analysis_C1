@@ -156,7 +156,7 @@ residential_cold_cor_df <- map_df(vars, function(v) {
   )
 })
 
-residential_warm_cor_df
+residential_cold_cor_df
 
 commercial_cold_cor_df <- map_df(vars, function(v) {
   test <- cor.test(cold_df$commercial, cold_df[[v]], use = "complete.obs")
@@ -169,3 +169,21 @@ commercial_cold_cor_df <- map_df(vars, function(v) {
 })
 
 commercial_cold_cor_df
+
+#Plot of annual residential consumption and TMIN
+
+res_v_tmin_plot <- annual_df %>%
+  ggplot() +
+  geom_point(aes(x = mean_TMIN, y = residential)) +
+  geom_smooth(aes(x = mean_TMIN, y = residential), method = "lm", se = FALSE, color = "red") +
+  labs(
+    x = "Average Annual Minimum Temperature (F)",
+    y = "Natural Gas Consumption (MMcf)",
+    title = "Annual Mean Residential Natural Gas Consumption per Annual Min. Temperature"
+  )
+res_v_tmin_plot
+
+
+
+
+

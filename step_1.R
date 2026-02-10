@@ -1,14 +1,6 @@
 
 #overall residential yearly mean consumption plot
 
-NC_gas_avg_df <- NC_gas_df %>%
-  mutate(year = year(DATE)) %>%
-  group_by(year) %>%
-  summarize(
-    mean_residential = mean(residential),
-    mean_commercial = mean(commercial)
-  )
-
 residential_plot <- NC_gas_avg_df %>%
   ggplot() +
   geom_point(aes(x = year, y = mean_residential)) +
@@ -53,30 +45,6 @@ commercial_lm <- lm(mean_commercial ~ year, data = NC_gas_avg_df)
 tidy(commercial_lm) %>%
   mutate_if(is.numeric, round, 4)
 
-#splitting the months into 'warm' and 'cold' months
-
-NC_gas_cold_df <- NC_gas_df %>%
-  mutate(
-    year = year(DATE),
-    month = month(DATE),
-    year = if_else(month >= 11, year, year - 1)
-  ) %>%
-  filter(month %in% c(11, 12, 1, 2, 3, 4)) %>%
-  group_by(year) %>%
-  summarise(
-    residential_cold = mean(residential, na.rm = TRUE),
-    commercial_cold  = mean(commercial, na.rm = TRUE)
-  )
-
-
-NC_gas_warm_df <- NC_gas_df %>%
-  filter(month(DATE) %in% c(5:10)) %>%
-  mutate(year = year(DATE)) %>%
-  group_by(year) %>%
-  summarize(
-    residential_warm = mean(residential, na.rm = TRUE),
-    commercial_warm = mean(commercial, na.rm =)
-  )
 
 #creating plots for warm months
 
