@@ -9,7 +9,7 @@ residential_plot <- NC_gas_df %>%
   labs(
     x = "Date",
     y = "Natural Gas Consumption (MMcf)",
-    title = "Residential Natural Gas Consumption 1983-2023"
+    title = "Residential Natural Gas Consumption 1989-2023"
   )
     
 
@@ -31,7 +31,7 @@ commercial_plot <- NC_gas_df %>%
   labs(
     x = "Date",
     y = "Natural Gas Consumption (MMcf)",
-    title = "Commercial Natural Gas Consumption 1983-2023"
+    title = "Commercial Natural Gas Consumption 1989-2023"
   )
 
 commercial_plot
