@@ -42,11 +42,61 @@ airport_df <- combined_df %>%
   ungroup() %>%
   select(DATE, mean_CLDD, mean_HTDD, mean_TAVG, mean_TMAX, mean_TMIN, residential, commercial)
 
+annual_df <- airport_df %>%
+  mutate(
+    year = year(DATE),
+    month = month(DATE)) %>%
+  group_by(year) %>%
+  summarise(
+    mean_CLDD = mean(mean_CLDD, na.rm = TRUE),
+    mean_HTDD = mean(mean_HTDD, na.rm = TRUE),
+    mean_TAVG = mean(mean_TAVG, na.rm = TRUE),
+    mean_TMAX = mean(mean_TMAX, na.rm = TRUE),
+    mean_TMIN = mean(mean_TMIN, na.rm = TRUE),
+    residential = mean(residential, na.rm = TRUE),
+    commercial  = mean(commercial,  na.rm = TRUE)
+  )
+
+cold_df <- airport_df %>%
+  mutate(
+    year = year(DATE),
+    month = month(DATE),
+    cold_year = if_else(month >= 11, year, year - 1)
+  ) %>%
+  filter(month %in% c(11,12,1,2,3,4)) %>%
+  group_by(cold_year) %>%
+  summarise(
+    mean_CLDD = mean(mean_CLDD, na.rm = TRUE),
+    mean_HTDD = mean(mean_HTDD, na.rm = TRUE),
+    mean_TAVG = mean(mean_TAVG, na.rm = TRUE),
+    mean_TMAX = mean(mean_TMAX, na.rm = TRUE),
+    mean_TMIN = mean(mean_TMIN, na.rm = TRUE),
+    residential = mean(residential, na.rm = TRUE),
+    commercial  = mean(commercial,  na.rm = TRUE)
+  ) %>%
+  rename(year = cold_year)
+
+warm_df <- airport_df %>%
+  mutate(
+    year = year(DATE),
+    month = month()) %>%
+  filter(month %in% 5:10) %>%
+  group_by(year) %>%
+  summarise(
+    mean_CLDD = mean(mean_CLDD, na.rm = TRUE),
+    mean_HTDD = mean(mean_HTDD, na.rm = TRUE),
+    mean_TAVG = mean(mean_TAVG, na.rm = TRUE),
+    mean_TMAX = mean(mean_TMAX, na.rm = TRUE),
+    mean_TMIN = mean(mean_TMIN, na.rm = TRUE),
+    residential = mean(residential, na.rm = TRUE),
+    commercial  = mean(commercial,  na.rm = TRUE)
+  )
+
 #residential total correlations
 vars <- c("mean_CLDD", "mean_HTDD", "mean_TAVG", "mean_TMAX", "mean_TMIN")
 
 residential_cor_df <- map_df(vars, function(v) {
-  test <- cor.test(airport_df$residential, airport_df[[v]], use = "complete.obs")
+  test <- cor.test(annual_df$residential, annual_df[[v]], use = "complete.obs")
   
   tibble(
     variable = v,
@@ -58,11 +108,8 @@ residential_cor_df <- map_df(vars, function(v) {
 residential_cor_df
 
 #commercial total correlations
-
-vars <- c("mean_CLDD", "mean_HTDD", "mean_TAVG", "mean_TMAX", "mean_TMIN")
-
 commercial_cor_df <- map_df(vars, function(v) {
-  test <- cor.test(airport_df$commercial, airport_df[[v]], use = "complete.obs")
+  test <- cor.test(annual_df$commercial, annual_df[[v]], use = "complete.obs")
   
   tibble(
     variable = v,
@@ -72,3 +119,53 @@ commercial_cor_df <- map_df(vars, function(v) {
 })
 
 commercial_cor_df
+
+#warm correlations
+residential_warm_cor_df <- map_df(vars, function(v) {
+  test <- cor.test(warm_df$residential, warm_df[[v]], use = "complete.obs")
+  
+  tibble(
+    variable = v,
+    r = test$estimate,
+    p_value = test$p.value
+  )
+})
+
+residential_warm_cor_df
+
+commercial_warm_cor_df <- map_df(vars, function(v) {
+  test <- cor.test(warm_df$commercial, warm_df[[v]], use = "complete.obs")
+  
+  tibble(
+    variable = v,
+    r = test$estimate,
+    p_value = test$p.value
+  )
+})
+
+commercial_warm_cor_df
+
+#cold correlations
+residential_cold_cor_df <- map_df(vars, function(v) {
+  test <- cor.test(cold_df$residential, cold_df[[v]], use = "complete.obs")
+  
+  tibble(
+    variable = v,
+    r = test$estimate,
+    p_value = test$p.value
+  )
+})
+
+residential_warm_cor_df
+
+commercial_cold_cor_df <- map_df(vars, function(v) {
+  test <- cor.test(cold_df$commercial, cold_df[[v]], use = "complete.obs")
+  
+  tibble(
+    variable = v,
+    r = test$estimate,
+    p_value = test$p.value
+  )
+})
+
+commercial_cold_cor_df
