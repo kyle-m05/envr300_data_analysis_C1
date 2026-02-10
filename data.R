@@ -3,6 +3,8 @@
 library(tidyverse)
 library(tidymodels)
 library(here)
+library(broom)
+library(purrr)
 
 
 #Loading the Datasets

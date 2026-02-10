@@ -107,6 +107,9 @@ commercial_cold_plot <- NC_gas_cold_df %>%
 
 commercial_cold_plot
 
+residential_cold <- tidy(lm(residential ~ date, data = NC_gas_cold_df))
+
+residential_cold
 
 
 
