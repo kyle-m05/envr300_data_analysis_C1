@@ -25,6 +25,41 @@ NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
          commercial = as.numeric(commercial)
   )
 
+#annual mean for gas consumption data
+NC_gas_avg_df <- NC_gas_df %>%
+  mutate(year = year(DATE)) %>%
+  group_by(year) %>%
+  summarize(
+    mean_residential = mean(residential, na.rm = TRUE),
+    mean_commercial = mean(commercial, na.rm = TRUE)
+  )
+
+#splitting the months into 'warm' and 'cold' months
+
+NC_gas_cold_df <- NC_gas_df %>%
+  mutate(
+    year = year(DATE),
+    month = month(DATE),
+    year = if_else(month >= 11, year, year - 1)
+  ) %>%
+  filter(month %in% c(11, 12, 1, 2, 3, 4)) %>%
+  group_by(year) %>%
+  summarise(
+    residential_cold = mean(residential, na.rm = TRUE),
+    commercial_cold  = mean(commercial, na.rm = TRUE)
+  )
+
+
+NC_gas_warm_df <- NC_gas_df %>%
+  filter(month(DATE) %in% c(5:10)) %>%
+  mutate(year = year(DATE)) %>%
+  group_by(year) %>%
+  summarize(
+    residential_warm = mean(residential, na.rm = TRUE),
+    commercial_warm = mean(commercial, na.rm =)
+  )
+
+
 #airport weather dataframes
 RDU_df <- read.csv(here("data", "USW00013722.csv"))
 
