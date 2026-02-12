@@ -22,8 +22,8 @@ pred_temp_df <- pred_temp_df %>%
   )
 
 #natural gas consumption dataframe
-NC_gas_df <- read.csv(here("data", "NG_CONS_SUM_DCU_SNC_M.csv"))
-NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
+NC_gas_df_full <- read.csv(here("data", "NG_CONS_SUM_DCU_SNC_M.csv"))
+NC_gas_df_full <- NC_gas_df_full[-c(1,2), ] %>%
   select(Back.to.Contents,
          X,
          X.1) %>%
@@ -34,6 +34,11 @@ NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
          residential = as.numeric(residential),
          commercial = as.numeric(commercial)
   )
+
+NC_gas_df <- NC_gas_df_full %>%
+  slice(1:(n() - 11))
+
+
 
 #annual mean for gas consumption data
 NC_gas_avg_df <- NC_gas_df %>%
@@ -60,7 +65,7 @@ NC_gas_cold_df <- NC_gas_df %>%
   )
 
 
-NC_gas_warm_df <- NC_gas_df %>%
+NC_gas_warm_df <- NC_gas_df_full %>%
   filter(month(DATE) %in% c(5:10)) %>%
   mutate(year = year(DATE)) %>%
   group_by(year) %>%

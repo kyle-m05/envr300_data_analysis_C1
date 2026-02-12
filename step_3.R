@@ -34,3 +34,22 @@ pred_cold_df <- pred_temp_df %>%
     MIROC.ESM = mean(MIROC.ESM),
     MPI.ESM.LR = mean(MPI.ESM.LR)
   )
+
+#predicting models
+TAVG_model <- lm(residential ~ mean_TAVG, data = airport_df)
+
+TAVG_model
+
+
+
+
+
+
+
+
+
+
+
+
+
+

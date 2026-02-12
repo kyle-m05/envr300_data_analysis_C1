@@ -79,7 +79,7 @@ cold_df <- airport_df %>%
 warm_df <- airport_df %>%
   mutate(
     year = year(DATE),
-    month = month()) %>%
+    month = month(DATE)) %>%
   filter(month %in% 5:10) %>%
   group_by(year) %>%
   summarise(
@@ -182,7 +182,6 @@ res_v_tmin_plot <- annual_df %>%
     title = "Annual Mean Residential Natural Gas Consumption per Annual Min. Temperature"
   )
 res_v_tmin_plot
-
 
 
 

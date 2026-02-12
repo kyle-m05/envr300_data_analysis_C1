@@ -115,5 +115,5 @@ residential_cold_lm
 
 residential_warm_lm <- tidy(lm(residential_warm ~ year, data = NC_gas_warm_df))
 residential_warm_lm
-
+  
 
