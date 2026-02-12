@@ -11,6 +11,16 @@ library(purrr)
 
 #predicted temperature dataframe
 pred_temp_df <- read.csv(here("data", "Temp_GCMs.csv"))
+
+pred_temp_df <- pred_temp_df %>%
+  rename(
+    CanESM2 = T..CanESM2.,
+    CSIRO.Mk3.6.0 = T..CSIRO.Mk3.6.0.,
+    GFDL.CM3 = T..GFDL.CM3.,
+    MIROC.ESM = T..MIROC.ESM.,
+    MPI.ESM.LR = T..MPI.ESM.LR.
+  )
+
 #natural gas consumption dataframe
 NC_gas_df <- read.csv(here("data", "NG_CONS_SUM_DCU_SNC_M.csv"))
 NC_gas_df <- NC_gas_df[-c(1,2), ] %>%
