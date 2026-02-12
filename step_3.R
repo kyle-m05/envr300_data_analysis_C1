@@ -35,21 +35,78 @@ pred_cold_df <- pred_temp_df %>%
     MPI.ESM.LR = mean(MPI.ESM.LR)
   )
 
+#calculating temperature trends for each GCM:
+
+gcms <- c("CanESM2", "CSIRO.Mk3.6.0", "GFDL.CM3", "MIROC.ESM", "MPI.ESM.LR")
+
+GCM_temp_trends <- map_df(gcms, function(x) {
+  
+  f <- as.formula(paste(x, "~ Year"))
+  
+  test <- tidy(lm(f, data = pred_annual_df))
+  
+  tibble(
+    GCM = x,
+    slope = test$estimate[test$term == "Year"],
+    p_value = test$p.value[test$term == "Year"]
+    )
+})
+
+GCM_temp_trends
+
+GCM_cold_trends <- map_df(gcms, function(x) {
+  
+  f <- as.formula(paste(x, "~ Year"))
+  
+  test <- tidy(lm(f, data = pred_cold_df))
+  
+  tibble(
+    GCM = x,
+    slope = test$estimate[test$term == "Year"],
+    p_value = test$p.value[test$term == "Year"]
+  )
+})
+
+GCM_cold_trends
+
+GCM_warm_trends <- map_df(gcms, function(x) {
+  
+  f <- as.formula(paste(x, "~ Year"))
+  
+  test <- tidy(lm(f, data = pred_warm_df))
+  
+  tibble(
+    GCM = x,
+    slope = test$estimate[test$term == "Year"],
+    p_value = test$p.value[test$term == "Year"]
+  )
+})
+
+GCM_warm_trends
+
 #predicting models
 TAVG_model <- lm(residential ~ mean_TAVG, data = airport_df)
 
 TAVG_model
 
+#prediction for CanESM2 GCM:
 
+CanESM2_annual_df <- pred_annual_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG)
 
+CanESM2_annual_df <- CanESM2_annual_df %>%
+  mutate(pred = predict(TAVG_model, newdata = CanESM2_annual_df))
 
+CanESM2_cold_df <- pred_cold_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model, newdata = .))
 
-
-
-
-
-
-
+CanESM2_warm_df <- pred_warm_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model, newdata = .))
 
 
 
