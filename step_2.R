@@ -21,18 +21,20 @@ GSO_df_rename <- GSO_df %>%
          TMAX_GSO = TMAX,
          TMIN_GSO = TMIN)
 
-combined_df <- full_join(CLT_df_rename, GSO_df_rename, by = "DATE")
+combined_df_0 <- full_join(CLT_df_rename, GSO_df_rename, by = "DATE")
 
-combined_df <- full_join(combined_df, RDU_df_rename, by = "DATE")
+combined_df_1 <- full_join(combined_df_0, RDU_df_rename, by = "DATE")
 
-combined_df$DATE <- ym(combined_df$DATE)
+combined_df_1$DATE <- ym(combined_df_1$DATE)
 
-combined_df <- full_join(combined_df, NC_gas_df, by = "DATE")
+combined_df <- full_join(combined_df_1, NC_gas_df, by = "DATE")
 
 combined_df <- combined_df %>%
   filter(DATE >= as.Date("1989-01-01"))
 
+
 airport_df <- combined_df %>%
+  slice(1:(n() - 12)) %>%
   rowwise() %>%
   mutate(mean_CLDD = mean(c(CLDD_RDU, CLDD_CLT, CLDD_GSO), na.rm = TRUE),
          mean_HTDD = mean(c(HTDD_RDU, HTDD_CLT, HTDD_GSO), na.rm = TRUE),
@@ -76,7 +78,23 @@ cold_df <- airport_df %>%
   ) %>%
   rename(year = cold_year)
 
-warm_df <- airport_df %>%
+#warm months are a wee bit different
+combined_warm_df <- full_join(combined_df_1, NC_gas_df_full, by = "DATE") %>%
+  filter(DATE >= as.Date("1989-01-01")) %>%
+  slice(5 : (n() - 2))
+
+airport_warm_df <- combined_warm_df %>%
+  rowwise() %>%
+  mutate(mean_CLDD = mean(c(CLDD_RDU, CLDD_CLT, CLDD_GSO), na.rm = TRUE),
+         mean_HTDD = mean(c(HTDD_RDU, HTDD_CLT, HTDD_GSO), na.rm = TRUE),
+         mean_TAVG = mean(c(TAVG_RDU, TAVG_CLT, TAVG_GSO), na.rm = TRUE),
+         mean_TMAX = mean(c(TMAX_RDU, TMAX_CLT, TMAX_GSO), na.rm = TRUE),
+         mean_TMIN = mean(c(TMIN_RDU, TMIN_CLT, TMIN_GSO), na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(DATE, mean_CLDD, mean_HTDD, mean_TAVG, mean_TMAX, mean_TMIN, residential, commercial)
+
+
+warm_df <- airport_warm_df %>%
   mutate(
     year = year(DATE),
     month = month(DATE)) %>%
@@ -177,10 +195,11 @@ res_v_tmin_plot <- annual_df %>%
   geom_point(aes(x = mean_TMIN, y = residential)) +
   geom_smooth(aes(x = mean_TMIN, y = residential), method = "lm", se = FALSE, color = "red") +
   labs(
-    x = "Average Annual Minimum Temperature (F)",
+    x = "Average Annual Minimum Temperature (C)",
     y = "Natural Gas Consumption (MMcf)",
     title = "Annual Mean Residential Natural Gas Consumption per Annual Min. Temperature"
-  )
+  ) +
+  coord_cartesian(xlim = c(8.8, 12))
 res_v_tmin_plot
 
 
