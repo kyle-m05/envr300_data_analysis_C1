@@ -149,6 +149,84 @@ MIROC_warm_res <- pred_warm_df %>%
          GCM = "MIROC.ESM",
          type = "residential")
 
+GCM_warm_trends <- map_df(gcms, function(x) {
+  
+  f <- as.formula(paste(x, "~ Year"))
+  
+  test <- tidy(lm(f, data = pred_warm_df))
+  
+  tibble(
+    GCM = x,
+    slope = test$estimate[test$term == "Year"],
+    p_value = test$p.value[test$term == "Year"]
+  )
+})
+
+GCM_warm_trends
+
+# RESIDENTIAL MODEL
+TAVG_model_res <- lm(residential ~ mean_TAVG, data = airport_df)
+
+# ---- CanESM2 ----
+CanESM2_cold_res <- pred_cold_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "CanESM2",
+         type = "residential")
+
+CanESM2_warm_res <- pred_warm_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "CanESM2",
+         type = "residential")
+
+# ---- CSIRO ----
+CSIRO_cold_res <- pred_cold_df %>%
+  mutate(mean_TAVG = CSIRO.Mk3.6.0) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "CSIRO.Mk3.6.0",
+         type = "residential")
+
+CSIRO_warm_res <- pred_warm_df %>%
+  mutate(mean_TAVG = CSIRO.Mk3.6.0) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "CSIRO.Mk3.6.0",
+         type = "residential")
+
+# ---- GFDL ----
+GFDL_cold_res <- pred_cold_df %>%
+  mutate(mean_TAVG = GFDL.CM3) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "GFDL.CM3",
+         type = "residential")
+
+GFDL_warm_res <- pred_warm_df %>%
+  mutate(mean_TAVG = GFDL.CM3) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "GFDL.CM3",
+         type = "residential")
+
+# ---- MIROC ----
+MIROC_cold_res <- pred_cold_df %>%
+  mutate(mean_TAVG = MIROC.ESM) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "MIROC.ESM",
+         type = "residential")
+
+MIROC_warm_res <- pred_warm_df %>%
+  mutate(mean_TAVG = MIROC.ESM) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "MIROC.ESM",
+         type = "residential")
+
 # ---- MPI ----
 MPI_cold_res <- pred_cold_df %>%
   mutate(mean_TAVG = MPI.ESM.LR) %>%
@@ -242,5 +320,87 @@ MPI_warm_com <- pred_warm_df %>%
          GCM = "MPI.ESM.LR",
          type = "commercial")
 
+MPI_warm_res <- pred_warm_df %>%
+  mutate(mean_TAVG = MPI.ESM.LR) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_res, newdata = .),
+         GCM = "MPI.ESM.LR",
+         type = "residential")
 
+# COMMERCIAL MODEL
+TAVG_model_com <- lm(commercial ~ mean_TAVG, data = airport_df)
 
+# ---- CanESM2 ----
+CanESM2_cold_com <- pred_cold_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "CanESM2",
+         type = "commercial")
+
+CanESM2_warm_com <- pred_warm_df %>%
+  mutate(mean_TAVG = CanESM2) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "CanESM2",
+         type = "commercial")
+
+# ---- CSIRO ----
+CSIRO_cold_com <- pred_cold_df %>%
+  mutate(mean_TAVG = CSIRO.Mk3.6.0) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "CSIRO.Mk3.6.0",
+         type = "commercial")
+
+CSIRO_warm_com <- pred_warm_df %>%
+  mutate(mean_TAVG = CSIRO.Mk3.6.0) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "CSIRO.Mk3.6.0",
+         type = "commercial")
+
+# ---- GFDL ----
+GFDL_cold_com <- pred_cold_df %>%
+  mutate(mean_TAVG = GFDL.CM3) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "GFDL.CM3",
+         type = "commercial")
+
+GFDL_warm_com <- pred_warm_df %>%
+  mutate(mean_TAVG = GFDL.CM3) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "GFDL.CM3",
+         type = "commercial")
+
+# ---- MIROC ----
+MIROC_cold_com <- pred_cold_df %>%
+  mutate(mean_TAVG = MIROC.ESM) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "MIROC.ESM",
+         type = "commercial")
+
+MIROC_warm_com <- pred_warm_df %>%
+  mutate(mean_TAVG = MIROC.ESM) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "MIROC.ESM",
+         type = "commercial")
+
+# ---- MPI ----
+MPI_cold_com <- pred_cold_df %>%
+  mutate(mean_TAVG = MPI.ESM.LR) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "MPI.ESM.LR",
+         type = "commercial")
+
+MPI_warm_com <- pred_warm_df %>%
+  mutate(mean_TAVG = MPI.ESM.LR) %>%
+  select(Year, mean_TAVG) %>%
+  mutate(pred = predict(TAVG_model_com, newdata = .),
+         GCM = "MPI.ESM.LR",
+         type = "commercial")
